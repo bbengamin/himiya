@@ -144,6 +144,15 @@
                     <?php } ?>
                   </div>
                 </div>
+                <div class="form-group required">
+                  <label class="col-sm-2 control-label" for="input-telephone2"><?php echo $entry_telephone2; ?></label>
+                  <div class="col-sm-10">
+                    <input type="text" name="config_telephone2" value="<?php echo $config_telephone2; ?>" placeholder="<?php echo $entry_telephone2; ?>" id="input-telephone2" class="form-control" />
+                    <?php if ($error_telephone) { ?>
+                    <div class="text-danger"><?php echo $error_telephone; ?></div>
+                    <?php } ?>
+                  </div>
+                </div>
                 <div class="form-group">
                   <label class="col-sm-2 control-label" for="input-fax"><?php echo $entry_fax; ?></label>
                   <div class="col-sm-10">

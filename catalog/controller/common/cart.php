@@ -132,8 +132,8 @@ class ControllerCommonCart extends Controller {
 			);
 		}
 
-		$data['cart'] = $this->url->link('checkout/cart');
-		$data['checkout'] = $this->url->link('checkout/checkout', '', 'SSL');
+		$data['cart'] = $this->url->link('checkout/buy');
+		$data['checkout'] = $this->url->link('checkout/buy', '', 'SSL');
 
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/cart.tpl')) {
 			return $this->load->view($this->config->get('config_template') . '/template/common/cart.tpl', $data);

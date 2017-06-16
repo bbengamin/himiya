@@ -30,13 +30,28 @@
               <a href="https://maps.google.com/maps?q=<?php echo urlencode($geocode); ?>&hl=<?php echo $geocode_hl; ?>&t=m&z=15" target="_blank" class="btn btn-info"><i class="fa fa-map-marker"></i> <?php echo $button_map; ?></a>
               <?php } ?>
             </div>
-            <div class="col-sm-3"><strong><?php echo $text_telephone; ?></strong><br>
+            <div class="col-sm-3">
+              <strong><?php echo $text_telephone; ?></strong><br>
               <?php echo $telephone; ?><br />
               <br />
+              <!--<strong><?php echo $text_email; ?></strong><br>
+              <?php echo $storeEmail; ?><br />
+              <br />-->
               <?php if ($fax) { ?>
               <strong><?php echo $text_fax; ?></strong><br>
               <?php echo $fax; ?>
               <?php } ?>
+            </div>
+            <div class="col-sm-3">
+              <strong><?php echo $text_telephone2; ?></strong><br>
+              <?php echo $telephone2; ?><br />
+              <br />
+            </div>
+            <div class="col-sm-3">
+               <strong><?php echo $text_email; ?></strong><br>
+                  <a class='' href='mailto:<?php echo $storeEmail; ?>'>
+                <span><?php echo $storeEmail; ?></span>
+              </a>
             </div>
             <div class="col-sm-3">
               <?php if ($open) { ?>

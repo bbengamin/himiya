@@ -72,55 +72,128 @@ class Image {
 		}
 	}
 
-	public function resize($width = 0, $height = 0, $default = '') {
+	public function resize($width = 0, $height = 0, $default = '', $option = 'auto') {
 		if (!$this->width || !$this->height) {
 			return;
 		}
-
-		$xpos = 0;
-		$ypos = 0;
-		$scale = 1;
-
-		$scale_w = $width / $this->width;
-		$scale_h = $height / $this->height;
-
-		if ($default == 'w') {
-			$scale = $scale_w;
-		} elseif ($default == 'h') {
-			$scale = $scale_h;
-		} else {
-			$scale = min($scale_w, $scale_h);
+		
+		
+		
+		$scale_w = $width / $height;
+		$scale_h = $height / $width;
+		
+		$new_height = 0;
+		$new_width = 0;
+		
+		if($scale_w < 1){
+			$scale_h = 1;
+			
+			$new_height = $this->height * $scale_h;
+			$new_width = $this->height * $scale_w;
+			
+			if($this->width < $new_width){
+				$new_width = $this->width;
+				$new_height = $this->width / $scale_w;
+			}
+		}else{
+			$scale_w = 1;
+			
+			$new_height = $this->width * $scale_h;
+			$new_width = $this->width * $scale_w;
+			
+				if($this->height < $new_height){
+				$new_height = $this->height;
+				$new_width = $this->height / $scale_h;
+			}
 		}
-
-		if ($scale == 1 && $scale_h == $scale_w && $this->mime != 'image/png') {
-			return;
-		}
-
-		$new_width = (int)($this->width * $scale);
-		$new_height = (int)($this->height * $scale);
-		$xpos = (int)(($width - $new_width) / 2);
-		$ypos = (int)(($height - $new_height) / 2);
-
+		
+	
 		$image_old = $this->image;
 		$this->image = imagecreatetruecolor($width, $height);
-
-		if ($this->mime == 'image/png') {
-			imagealphablending($this->image, false);
-			imagesavealpha($this->image, true);
-			$background = imagecolorallocatealpha($this->image, 255, 255, 255, 127);
-			imagecolortransparent($this->image, $background);
-		} else {
-			$background = imagecolorallocate($this->image, 255, 255, 255);
-		}
-
-		imagefilledrectangle($this->image, 0, 0, $width, $height, $background);
-
-		imagecopyresampled($this->image, $image_old, $xpos, $ypos, 0, 0, $new_width, $new_height, $this->width, $this->height);
+		imagecopyresampled($this->image, $image_old, 0, 0, 0, 0, $width, $height, $new_width, $new_height);
 		imagedestroy($image_old);
-
 		$this->width = $width;
 		$this->height = $height;
 	}
+	
+	private function getDimensions($newWidth, $newHeight)
+    {
+        $optionArray = $this->getSizeByAuto($newWidth, $newHeight);
+        $optimalWidth = $optionArray['optimalWidth'];
+        $optimalHeight = $optionArray['optimalHeight'];
+        return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
+    }
+
+    ## --------------------------------------------------------
+
+    private function getSizeByFixedHeight($newHeight)
+    {
+        $ratio = $this->width / $this->height;
+        $newWidth = $newHeight * $ratio;
+        return $newWidth;
+    }
+
+    private function getSizeByFixedWidth($newWidth)
+    {
+        $ratio = $this->height / $this->width;
+        $newHeight = $newWidth * $ratio;
+        return $newHeight;
+    }
+
+    private function getSizeByAuto($newWidth, $newHeight)
+    {
+        if ($this->height < $this->width)
+        // *** Image to be resized is wider (landscape)
+        {
+            $optimalWidth = $newWidth;
+            $optimalHeight= $this->getSizeByFixedWidth($newWidth);
+        }
+        elseif ($this->height > $this->width)
+        // *** Image to be resized is taller (portrait)
+        {
+            $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+            $optimalHeight= $newHeight;
+        }
+        else
+        // *** Image to be resizerd is a square
+        {
+	        if ($newHeight < $newWidth) {
+	            $optimalWidth = $newWidth;
+	            $optimalHeight= $this->getSizeByFixedWidth($newWidth);
+	        } else if ($newHeight > $newWidth) {
+	            $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+	            $optimalHeight= $newHeight;
+	        } else {
+	            // *** Sqaure being resized to a square
+	            $optimalWidth = $newWidth;
+	            $optimalHeight= $newHeight;
+	        }
+        }
+
+        return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
+    }
+
+    ## --------------------------------------------------------
+
+    private function getOptimalCrop($newWidth, $newHeight)
+    {
+
+        $heightRatio = $this->height / $newHeight;
+        $widthRatio  = $this->width /  $newWidth;
+
+        if ($heightRatio < $widthRatio) {
+            $optimalRatio = $heightRatio;
+        } else {
+            $optimalRatio = $widthRatio;
+        }
+
+        $optimalHeight = $this->height / $optimalRatio;
+        $optimalWidth  = $this->width  / $optimalRatio;
+
+        return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
+    }
+
+    ## --------------------------------------------------------
 
 	public function watermark($watermark, $position = 'bottomright') {
 		switch($position) {
@@ -146,8 +219,21 @@ class Image {
 
 		imagedestroy($watermark->getImage());
 	}
+	
+	private function crop($optimalWidth, $optimalHeight, $newWidth, $newHeight){
+        // *** Find center - this will be used for the crop
+        $cropStartX = ( $optimalWidth / 2) - ( $newWidth /2 );
+        $cropStartY = ( $optimalHeight/ 2) - ( $newHeight/2 );
 
-	public function crop($top_x, $top_y, $bottom_x, $bottom_y) {
+        $old_image = $this->image;
+        //imagedestroy($this->imageResized);
+
+        // *** Now crop from center to exact requested size
+        $this->image = imagecreatetruecolor($newWidth , $newHeight);
+        imagecopyresampled($this->image, $old_image , 0, 0, $cropStartX, $cropStartY, $newWidth, $newHeight , $newWidth, $newHeight);
+    }
+
+	/*public function crop($top_x, $top_y, $bottom_x, $bottom_y) {
 		$image_old = $this->image;
 		$this->image = imagecreatetruecolor($bottom_x - $top_x, $bottom_y - $top_y);
 
@@ -157,7 +243,7 @@ class Image {
 		$this->width = $bottom_x - $top_x;
 		$this->height = $bottom_y - $top_y;
 	}
-
+*/
 	public function rotate($degree, $color = 'FFFFFF') {
 		$rgb = $this->html2rgb($color);
 

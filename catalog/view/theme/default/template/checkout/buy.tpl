@@ -30,21 +30,23 @@
         <?php } ?>
         <div id="content" class="<?php echo $class; ?>"><?php echo $content_top; ?>
             <h1><?php echo $heading_title; ?>
-                <?php if ($weight) { ?>
+                <!--<?php if ($weight) { ?>
                     &nbsp;(<?php echo $weight; ?>)
-                <?php } ?>
+                <?php } ?>-->
             </h1>
-            <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">
-                <div class="table-responsive">
-                    <table class="table">
+            <form action="<?php echo $action; ?>" id='buy-form' method="post" enctype="multipart/form-data">
+                <div id='buy-load'>
+                <div class="table-responsive hidden-xs">
+                    <table class="table" id='marin-cart-table'>
                         <thead>
                             <tr>
                                 <td class="text-center"><?php echo $column_image; ?></td>
-                                <td class="text-left"><?php echo $column_name; ?></td>
-                                <td class="text-left"><?php echo $column_model; ?></td>
-                                <td class="text-left"><?php echo $column_quantity; ?></td>
-                                <td class="text-right"><?php echo $column_price; ?></td>
-                                <td class="text-right"><?php echo $column_total; ?></td>
+                                <td class="text-center"><?php echo $column_name; ?></td>
+                                <td class="text-center"><?php echo $column_model; ?></td>
+                                <td class="text-center"><?php echo $column_quantity; ?></td>
+                                <td class="text-center"><?php echo $column_price; ?></td>
+                                <td class="text-center"><?php echo $column_total; ?></td>
+                                <td class="text-center"></td>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,7 +55,7 @@
                                     <td class="text-center"><?php if ($product['thumb']) { ?>
                                             <a href="<?php echo $product['href']; ?>"><img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" class="img-thumbnail" /></a>
                                         <?php } ?></td>
-                                    <td class="text-left"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
+                                    <td class="text-center"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
                                         <?php if (!$product['stock']) { ?>
                                             <span class="text-danger">***</span>
                                         <?php } ?>
@@ -71,14 +73,22 @@
                                             <br />
                                             <span class="label label-info"><?php echo $text_recurring_item; ?></span> <small><?php echo $product['recurring']; ?></small>
                                         <?php } ?></td>
-                                    <td class="text-left"><?php echo $product['model']; ?></td>
-                                    <td class="text-left"><div class="input-group btn-block" style="max-width: 200px;">
-                                            <input type="text" name="quantity[<?php echo $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="1" class="form-control" />
-                                            <span class="input-group-btn">
-                                                <button type="submit" data-toggle="tooltip" title="<?php echo $button_update; ?>" class="btn btn-primary"><i class="fa fa-refresh"></i></button>
-                                                <button type="button" data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="btn btn-danger" onclick="cart.remove('<?php echo $product['key']; ?>');"><i class="fa fa-times-circle"></i></button></span></div></td>
-                                    <td class="text-right"><?php echo $product['price']; ?></td>
-                                    <td class="text-right"><?php echo $product['total']; ?></td>
+                                    <td class="text-center"><?php echo $product['model']; ?></td>
+                                    <td class="text-center">
+                                        <div class="quanty-box" >
+                                            <div class='minus'>-</div>
+                                            <input type="text" class='quantity-input' name="quantity[<?php echo $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="1" class="form-control" />
+                                            <div class='plus'>+</div>
+                                        </div>
+                                        
+                                    </td>
+                                    <td class="text-center"><?php echo $product['price']; ?></td>
+                                    <td class="text-center total-cart-col"><?php echo $product['total']; ?></td>
+                                    <td class="text-center delete-cart-col">
+                                        <div data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="cart-main-remove" onclick="cart.remove('<?php echo $product['key']; ?>');">
+                                            <i class="material-icons">delete_forever</i>
+                                        </div>
+                                    </td>
                                 </tr>
                             <?php } ?>
                             <?php foreach ($vouchers as $vouchers) { ?>
@@ -93,16 +103,49 @@
                                     <td class="text-right"><?php echo $vouchers['amount']; ?></td>
                                 </tr>
                             <?php } ?>
-                            <?php foreach ($totals as $total) { ?>
-                                <tr class="total-item">
-                                    <td colspan="4" style="border:none;"> </td>
-                                    <td class="text-right"><strong><?php echo $total['title']; ?>:</strong></td>
-                                    <td class="text-right"><?php echo $total['text']; ?></td>
-                                </tr>
-                            <?php } ?>
+                            
                         </tbody>
                     </table>
                 </div>
+                <div class="mobile-cart-box visible-xs">
+                        <div class="mobile-cart-inner">
+                            <?php foreach ($products as $product) { ?>
+                            <div class="mob-item-cart">
+                                <div class="mob-cart-item mob-cart-item-img">
+                                    <a href="<?php echo $product['href']; ?>"><img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" class="img-responsive" /></a>
+                                </div>
+                                <div class="mob-cart-item mob-cart-item-text-box">
+                                    <div class="mob-cart-item mob-cart-item-name"><?php echo $product['name']; ?></div>    
+                                    <div class="mob-cart-item mob-cart-item-qua">
+                                        <div class="quanty-box" >
+                                            <div class='minus'>-</div>
+                                            <input type="text" class='quantity-input' name="quantity[<?php echo $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="1" class="form-control" />
+                                            <div class='plus'>+</div>
+                                        </div>
+                                    </div>    
+                                    <div class="mob-cart-item mob-cart-item-price">
+                                        <?php echo $product['price']; ?>
+                                    </div>    
+                                </div>
+                                <div data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="cart-main-remove cart-main-remove-mob" onclick="cart.remove('<?php echo $product['key']; ?>');">
+                                    <i class="material-icons">delete_forever</i>
+                                </div>
+                            </div>
+                            <?php } ?>
+                            
+                        </div>
+                    </div>
+                    <div class="cart-total-box">
+                            <ul class="totals-box list-unstyled">
+                                <?php foreach ($totals as $total) { ?>
+                                <li>
+                                    <span class="total-item total-head-item"><strong><?php echo $total['title']; ?>:</strong></span>
+                                    <span class="total-item total-not-head-item"><?php echo $total['text']; ?></span>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+            </div>
             </form>
             <?php if (($coupon || $voucher || $reward || $shipping) && $settings['buy_cart_modules']) { ?>
                 <h2><?php echo $text_next; ?></h2>
@@ -470,7 +513,7 @@
                     <?php }else{ ?>
                         <div class="hidden"><input type="radio" name="shipping_method" value="flat.flat" checked="checked"></div>
                     <?php } ?>
-                    <br />
+                   
                     <?php if($settings['buy_payment_select']){ ?>
                     <div class="form-group">
                         <div id="payment_methods"></div>
@@ -479,7 +522,6 @@
                         <div class="hidden"><input type="radio" name="payment_method" value="cod" checked="checked"></div>
                     <?php } ?>
                     <?php if($settings['buy_comment_status']){ ?>
-                    <br />
                     <div class="form-group<?php if($settings['buy_comment_required']){ ?> required<?php } ?>">
                         <label class="control-label" for="input-comment"><strong><?php echo $entry_comment; ?></strong></label>
                         <textarea name="comment" rows="8" class="form-control" id="input-comment"><?php echo $comment; ?></textarea>
@@ -488,16 +530,8 @@
                     <?php if ($text_agree) { ?>
                         <div class="buttons">
                             <div class="text-center">
-                                <label><?php echo $text_agree; ?>
-                                <?php if ($agree) { ?>
-                                    <input type="checkbox" name="agree" value="1" checked="checked" />
-                                <?php } else { ?>
-                                    <input type="checkbox" name="agree" value="1" />
-                                <?php } ?>
-                                </label>
-                                <br />
-                                <br />
-                                <input type="button" value="<?php echo $button_order; ?>" id="button-order" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-success btn-lg" />
+                              
+                                <input type="button" value="<?php echo $button_order; ?>" id="button-order" data-loading-text="<?php echo $text_loading; ?>" class="product-btns" />
                             </div>
                             <div id="payment-form"></div>
                         </div>
@@ -505,7 +539,7 @@
                         <br />
                         <div class="buttons">
                             <div class="text-center">
-                                <input type="button" value="<?php echo $button_order; ?>" id="button-order" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-success btn-lg" />
+                                <input type="button" value="<?php echo $button_order; ?>" id="button-order" data-loading-text="<?php echo $text_loading; ?>" class="product-btns" />
                             </div>
                             <div id="payment-form"></div>
                         </div>
@@ -527,6 +561,34 @@
 <script type="text/javascript" src="catalog/view/javascript/jquery/jquery.maskedinput.min.js"></script>
 <?php } ?>
 <script type="text/javascript"><!--
+
+$('#buy-form').on("click", ".minus" ,function(){
+    var count = parseInt($(this).next().val());
+    $(this).next().val(count-1);
+    if(count <= 1 || isNaN(count)){
+        $(this).next().val(1);
+    }
+    $(this).next().trigger('change');
+});
+
+$('#buy-form').on("click", ".plus" ,function(){
+    var count = parseInt($(this).prev().val());
+    $(this).prev().val(count+1);
+    $(this).prev().trigger('change');
+});
+$('#buy-form').on('change', '.quantity-input',function() {
+    $.ajax({
+        url: 'index.php?route=checkout/buy/editMy',
+        type: 'post',
+        data: $(this),
+        dataType: 'json',
+        success: function(json) {
+            $('#buy-form').load('index.php?route=checkout/buy #buy-load');
+        }
+    });
+    
+});
+
 cart.remove = function(key) {
         $.ajax({
             url: 'index.php?route=checkout/cart/remove',
@@ -589,6 +651,7 @@ cart.remove = function(key) {
                 if (zone_id) {
                     updateShM(zone_id);
                 }
+                updateShM(4224);
             },
             error: function(xhr, ajaxOptions, thrownError) {
                 alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
@@ -599,12 +662,12 @@ cart.remove = function(key) {
     $('#checkout-form select[name=\'country_id\']').trigger('change');
     function updateShM(zone_id) {
         //$('#shm_loading, #pay_loading').html(' <img src="image/loading.gif" width="43" height="11" style="margin-top:-3px;vertical-align:middle;">');
-<?php if ($settings['buy_shipping_select']) { ?>
+
             $('#shipping_methods').load('index.php?route=checkout/buy/getShippingMethods&zone_id=' + zone_id, function() {
                 $('#shm_loading').empty();
                 selectShipping();
             });
-<?php } ?>
+
         $('#payment_methods').load('index.php?route=checkout/buy/getPaymentMethods&zone_id=' + zone_id, function() {
             $('#pay_loading').empty();
         });
@@ -759,9 +822,10 @@ cart.remove = function(key) {
                 dataType: 'json',
                 success: function(json) {
                     if(json['totals']){
-                        var container = $('.total-item').closest('table');
-                        container.children('tbody').children('.total-item').remove();
-                        container.children('tbody').append(json['totals']);
+                        $('#buy-form').load('index.php?route=checkout/buy #buy-load');
+                        // var container = $('.total-item').closest('table');
+                        // container.children('tbody').children('.total-item').remove();
+                        // container.children('tbody').append(json['totals']);
                     }
                 }
             });

@@ -2,7 +2,7 @@
 // Text
 $_['text_home']          = 'Главная';
 $_['text_wishlist']      = 'Закладки (%s)';
-$_['text_shopping_cart'] = 'Корзина';
+$_['text_shopping_cart'] = 'Корзина товаров';
 $_['text_category']      = 'Категории';
 $_['text_account']       = 'Личный кабинет';
 $_['text_register']      = 'Регистрация';

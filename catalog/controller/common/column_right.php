@@ -5,6 +5,7 @@ class ControllerCommonColumnRight extends Controller {
 
 		if (isset($this->request->get['route'])) {
 			$route = (string)$this->request->get['route'];
+			//var_dump($route);
 		} else {
 			$route = 'common/home';
 		}
@@ -33,6 +34,7 @@ class ControllerCommonColumnRight extends Controller {
 
 		if (!$layout_id) {
 			$layout_id = $this->model_design_layout->getLayout($route);
+			//var_dump($layout_id);
 		}
 
 		if (!$layout_id) {
@@ -42,14 +44,20 @@ class ControllerCommonColumnRight extends Controller {
 		$this->load->model('extension/module');
 
 		$data['modules'] = array();
+		
+		//var_dump($data['modules']);
 
 		$modules = $this->model_design_layout->getLayoutModules($layout_id, 'column_right');
+		
+		//var_dump($modules);
 
 		foreach ($modules as $module) {
 			$part = explode('.', $module['code']);
+			//var_dump($part[0]);
 
 			if (isset($part[0]) && $this->config->get($part[0] . '_status')) {
 				$data['modules'][] = $this->load->controller('module/' . $part[0]);
+				//var_dump($data['modules']);
 			}
 
 			if (isset($part[1])) {
@@ -60,6 +68,8 @@ class ControllerCommonColumnRight extends Controller {
 				}
 			}
 		}
+		
+		//var_dump($data);
 
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/column_right.tpl')) {
 			return $this->load->view($this->config->get('config_template') . '/template/common/column_right.tpl', $data);

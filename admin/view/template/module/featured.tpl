@@ -47,6 +47,14 @@
               </div>
             </div>
           </div>
+          
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-title">Заголовок</label>
+            <div class="col-sm-10">
+              <input type="text" name="title" value="<?php echo $title; ?>" placeholder="Заголовок" id="input-title" class="form-control" />
+            </div>
+          </div>
+          
           <div class="form-group">
             <label class="col-sm-2 control-label" for="input-limit"><?php echo $entry_limit; ?></label>
             <div class="col-sm-10">

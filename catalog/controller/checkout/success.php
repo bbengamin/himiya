@@ -49,10 +49,10 @@ class ControllerCheckoutSuccess extends Controller {
 			'href' => $this->url->link('common/home')
 		);
 
-		$data['breadcrumbs'][] = array(
-			'text' => $this->language->get('text_basket'),
-			'href' => $this->url->link('checkout/cart')
-		);
+		// $data['breadcrumbs'][] = array(
+		// 	'text' => $this->language->get('text_basket'),
+		// 	'href' => $this->url->link('checkout/cart')
+		// );
 
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_checkout'),

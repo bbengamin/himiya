@@ -23,6 +23,10 @@ function getURLVar(key) {
 }
 
 $(document).ready(function() {
+	$('.new-buy-btn-quick').click(function() {
+	   $('#form-quick-buy [name=product_id]').val($(this).data('id'));
+	});
+	
 	// Highlight any found errors
 	$('.text-danger').each(function() {
 		var element = $(this).parent().parent();
@@ -31,6 +35,14 @@ $(document).ready(function() {
 			element.addClass('has-error');
 		}
 	});
+	
+	if($(window).width() < 768){
+			$('input[name="phone"]').mask('+380999999999');
+			$('input[name="telephone"]').mask('+380999999999');
+		}else{
+			$('input[name="phone"]').mask('+38(099)999-99-99');
+			$('input[name="telephone"]').mask('+38(099)999-99-99');
+		}
 
 	// Currency
 	$('#currency .currency-select').on('click', function(e) {
@@ -54,7 +66,7 @@ $(document).ready(function() {
 	$('#search input[name=\'search\']').parent().find('button').on('click', function() {
 		url = $('base').attr('href') + 'index.php?route=product/search';
 
-		var value = $('header input[name=\'search\']').val();
+		var value = $('.liveSearch-input').val();
 
 		if (value) {
 			url += '&search=' + encodeURIComponent(value);
@@ -107,6 +119,8 @@ $(document).ready(function() {
 		 localStorage.setItem('display', 'grid');
 	});
 
+	localStorage.setItem('display', 'grid');
+	
 	if (localStorage.getItem('display') == 'list') {
 		$('#list-view').trigger('click');
 	} else {
@@ -119,6 +133,96 @@ $(document).ready(function() {
 			$('#collapse-checkout-option #button-login').trigger('click');
 		}
 	});
+	
+	//$('#search input[name=\'search\']').on('keyup', function(e) {
+	 $('.liveSearch-input').on('keyup', function(e) {
+			self = this;
+		    clearTimeout(self.delayTimer);
+		    self.delayTimer = setTimeout(function() {
+				var value = $('.liveSearch-input').val();
+				var data = 'search=' + encodeURIComponent(value);
+				
+				$.ajax({
+					url: 'index.php?route=product/search/liveSearch',
+					type: 'get',
+					data: data,
+					dataType: 'html',
+					success: function(html) {
+						$('#live-search-result').html(html);
+					}
+				});
+		    }, 500);
+	});
+	
+	$('#form-call-back-header').on('submit', function(e) {
+			e.preventDefault();
+			$('#form-call-back-header input').removeClass('red_error');
+			$('#form-call-back-header .error').detach();
+			$.ajax({
+				url: 'index.php?route=checkout/fast/callback',
+				type: 'post',
+				data: $('#form-call-back-header input'),
+				dataType: 'json',
+				success: function(json) {
+					$('#form-call-back-header .error');
+					if(json['error']){
+						if (json['error']['name']) {
+							$('#form-call-back-header input[name="name"]').after('<span class="error">' + json['error']['name'] + '</span>');
+							$('#form-call-back-header input[name="name"]').addClass('red_error');
+						}
+						if (json['error']['phone']) {
+							$('#form-call-back-header input[name="phone"]').after('<span class="error">' + json['error']['phone'] + '</span>');
+							$('#form-call-back-header input[name="phone"]').addClass('red_error');
+						}
+					}
+	
+					if (json['success']) {
+						$('#form-call-back-header').hide();
+						$('#form-call-back-header').next().show();
+					}
+				}
+			});
+	
+			return false;
+			
+			
+		});
+		
+	$('#form-quick-buy').on('submit',function(e){
+			e.preventDefault();
+			$('#form-quick-buy input').removeClass('red_error');
+			$('#form-quick-buy .error').detach();
+			$.ajax({
+				url: 'index.php?route=checkout/fast/fastorder',
+				type: 'post',
+				data: $('#form-quick-buy input'),
+				dataType: 'json',
+				success: function(json) {
+					$('#form-quick-buy .error');
+					if(json['error']){
+						if (json['error']['name']) {
+							$('#form-quick-buy input[name="name"]').after('<span class="error">' + json['error']['name'] + '</span>');
+							$('#form-quick-buy input[name="name"]').addClass('red_error');
+						}
+						if (json['error']['phone']) {
+							$('#form-quick-buy input[name="phone"]').after('<span class="error">' + json['error']['phone'] + '</span>');
+							$('#form-quick-buy input[name="phone"]').addClass('red_error');
+						}
+							if (json['error']['email']) {
+							$('#form-quick-buy input[name="email"]').after('<span class="error">' + json['error']['email'] + '</span>');
+							$('#form-quick-buy input[name="email"]').addClass('red_error');
+						}
+					}
+	
+					if (json['success']) {
+						$('#form-quick-buy').hide();
+						$('#form-quick-buy').next().show();
+					}
+				}
+			});
+			
+			return false;
+		});	
 
 	// tooltips on hover
 	$('[data-toggle=\'tooltip\']').tooltip({container: 'body'});
@@ -126,6 +230,15 @@ $(document).ready(function() {
 	// Makes tooltips work on ajax generated content
 	$(document).ajaxStop(function() {
 		$('[data-toggle=\'tooltip\']').tooltip({container: 'body'});
+	});
+	
+	$('.simple-product-slider').owlCarousel({
+		items: 4,
+		autoPlay: 5000,
+		singleItem: false,
+		navigation: true,
+		navigationText: ['<i class="material-icons">navigate_before</i>', '<i class="material-icons">navigate_next</i>'],
+		pagination: false
 	});
 });
 
@@ -155,7 +268,7 @@ var cart = {
 
 					// Need to set timeout otherwise it wont update the total
 					setTimeout(function () {
-						$('#cart > button').html('<span id="cart-total"><i class="fa fa-shopping-cart"></i> ' + json['total'] + '</span>');
+						$('#cart-total').html(json['total']);
 					}, 100);
 
 					$('html, body').animate({ scrollTop: 0 }, 'slow');

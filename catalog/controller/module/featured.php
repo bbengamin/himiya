@@ -15,6 +15,12 @@ class ControllerModuleFeatured extends Controller {
 
 		$this->load->model('tool/image');
 
+		if(!$setting['title']) {
+			$data['title'] = '';
+		} else {
+			$data['title'] = $setting['title'];
+		}
+		
 		$data['products'] = array();
 
 		if (!$setting['limit']) {

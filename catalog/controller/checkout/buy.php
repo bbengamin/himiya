@@ -1,6 +1,23 @@
 <?php
 
 class ControllerCheckoutBuy extends Controller {
+    
+    public function editMy() {
+        $this->load->language('checkout/buy');
+
+        $json = array();
+
+        // Update
+        if (!empty($this->request->post['quantity'])) {
+            foreach ($this->request->post['quantity'] as $key => $value) {
+                $this->cart->update($key, $value);
+            }
+            $json['success'] = 'success';
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
 
     public function index() {
         $this->load->language('checkout/buy');
@@ -184,7 +201,7 @@ class ControllerCheckoutBuy extends Controller {
                 }
 
                 $data['products'][] = array(
-                    'key' => $product['key'],
+                    'key' => $product['cart_id'],
                     'thumb' => $image,
                     'name' => $product['name'],
                     'model' => $product['model'],
@@ -541,10 +558,14 @@ class ControllerCheckoutBuy extends Controller {
 
             /* END Guest information */
 
-            $data['coupon'] = $this->load->controller('checkout/coupon');
+          /*  $data['coupon'] = $this->load->controller('checkout/coupon');
             $data['voucher'] = $this->load->controller('checkout/voucher');
             $data['reward'] = $this->load->controller('checkout/reward');
-            $data['shipping'] = $this->load->controller('checkout/shipping');
+            $data['shipping'] = $this->load->controller('checkout/shipping');*/
+            $data['coupon'] = "";
+            $data['voucher'] = "";
+            $data['reward'] = "";
+            $data['shipping'] = "";
             $data['column_left'] = $this->load->controller('common/column_left');
             $data['column_right'] = $this->load->controller('common/column_right');
             $data['content_top'] = $this->load->controller('common/content_top');
